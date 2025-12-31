@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,10 +23,16 @@ class RegisterGooglePage extends StatefulWidget {
 class _RegisterGooglePageState extends State<RegisterGooglePage> {
   final usernameController = TextEditingController();
   String selectedGender = 'Laki-laki';
+  bool _isLoading = false;
 
   Future<void> verifikasiSelesai() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesi tidak valid. Silakan login kembali.')),
+      );
+      return;
+    }
 
     final username = usernameController.text.trim();
     if (username.isEmpty) {
@@ -35,15 +42,35 @@ class _RegisterGooglePageState extends State<RegisterGooglePage> {
       return;
     }
 
-    await user.updateDisplayName(username);
-
-    await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
-      'gender': selectedGender,
+    setState(() {
+      _isLoading = true;
     });
 
-    if (!mounted) return;
+    try {
+      await user.updateDisplayName(username).timeout(const Duration(seconds: 10));
 
-    Navigator.pushNamed(context, '/home');
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(user.uid)
+          .set({
+            'gender': selectedGender,
+          })
+          .timeout(const Duration(seconds: 10));
+
+      if (!mounted) return;
+
+      Navigator.pushNamed(context, '/home');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -111,13 +138,19 @@ class _RegisterGooglePageState extends State<RegisterGooglePage> {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: verifikasiSelesai,
+                onPressed: _isLoading ? null : verifikasiSelesai,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                   minimumSize: const Size.fromHeight(50),
                 ),
-                child: const Text("Selesai Registrasi"),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text("Selesai Registrasi"),
               ),
               const SizedBox(height: 24),
             ],
