@@ -21,7 +21,7 @@ class _AdminPageState extends State<AdminPage> {
   final TextEditingController _ayatController = TextEditingController();
   final TextEditingController _isiAyatController = TextEditingController();
 
-  // Controllers untuk Detail Item (1 saja)
+  // Controllers untuk Detail Item
   final TextEditingController _itemJudulController = TextEditingController();
   final TextEditingController _itemIsiController = TextEditingController();
 
@@ -29,6 +29,9 @@ class _AdminPageState extends State<AdminPage> {
   String? _selectedAudioName;
   String? _selectedItemImageName;
   String? _selectedItemAudioName;
+
+  // List untuk Quiz
+  List<Map<String, dynamic>> _quizList = [];
 
   Future<void> _pickImage() async {
     final result = await FilePicker.platform.pickFiles(
@@ -82,6 +85,135 @@ class _AdminPageState extends State<AdminPage> {
         _selectedItemAudioName = result.files.first.name;
       });
     }
+  }
+
+  void _addQuiz() {
+    if (_quizList.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Maksimal 5 quiz per cerita!')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final pertanyaanController = TextEditingController();
+        final pilihan1Controller = TextEditingController();
+        final pilihan2Controller = TextEditingController();
+        final pilihan3Controller = TextEditingController();
+        String? selectedJawaban;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text('Tambah Quiz ${_quizList.length + 1}'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: pertanyaanController,
+                      decoration: const InputDecoration(
+                        labelText: 'Pertanyaan',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: pilihan1Controller,
+                      decoration: const InputDecoration(
+                        labelText: 'Pilihan 1',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: pilihan2Controller,
+                      decoration: const InputDecoration(
+                        labelText: 'Pilihan 2',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: pilihan3Controller,
+                      decoration: const InputDecoration(
+                        labelText: 'Pilihan 3',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Jawaban Benar',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: '1', child: Text('Pilihan 1')),
+                        DropdownMenuItem(value: '2', child: Text('Pilihan 2')),
+                        DropdownMenuItem(value: '3', child: Text('Pilihan 3')),
+                      ],
+                      onChanged: (value) {
+                        setDialogState(() {
+                          selectedJawaban = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (pertanyaanController.text.trim().isEmpty ||
+                        pilihan1Controller.text.trim().isEmpty ||
+                        pilihan2Controller.text.trim().isEmpty ||
+                        pilihan3Controller.text.trim().isEmpty ||
+                        selectedJawaban == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Lengkapi semua field!')),
+                      );
+                      return;
+                    }
+
+                    List<String> pilihan = [
+                      pilihan1Controller.text.trim(),
+                      pilihan2Controller.text.trim(),
+                      pilihan3Controller.text.trim(),
+                    ];
+
+                    String jawaban = pilihan[int.parse(selectedJawaban!) - 1];
+
+                    setState(() {
+                      _quizList.add({
+                        'pertanyaan': pertanyaanController.text.trim(),
+                        'pilihan': pilihan,
+                        'jawaban': jawaban,
+                      });
+                    });
+
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Tambah'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _removeQuiz(int index) {
+    setState(() {
+      _quizList.removeAt(index);
+    });
   }
 
   void _showCopyInstructions(
@@ -175,6 +307,13 @@ Data sudah tersimpan di Firestore!
       return;
     }
 
+    if (_quizList.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tambahkan minimal 1 quiz!')),
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
     try {
@@ -195,6 +334,7 @@ Data sudah tersimpan di Firestore!
           'gambar': itemImagePath,
           'audio': itemAudioPath,
         },
+        'quiz': _quizList,
         'created_at': FieldValue.serverTimestamp(),
       });
 
@@ -216,6 +356,7 @@ Data sudah tersimpan di Firestore!
         _selectedAudioName = null;
         _selectedItemImageName = null;
         _selectedItemAudioName = null;
+        _quizList.clear();
       });
 
       if (mounted) {
@@ -352,7 +493,7 @@ Data sudah tersimpan di Firestore!
               ),
               const SizedBox(height: 8),
               const Text(
-                '1 Cerita = 1 Detail Item',
+                '1 Cerita = 1 Detail Item + 1-5 Quiz',
                 style: TextStyle(fontSize: 12, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -493,6 +634,64 @@ Data sudah tersimpan di Firestore!
                   ),
                 ],
               ),
+
+              const SizedBox(height: 30),
+              const Divider(),
+              const SizedBox(height: 16),
+
+              // QUIZ
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Quiz (${_quizList.length}/5)',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _quizList.length < 5 ? _addQuiz : null,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Tambah Quiz'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              if (_quizList.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'Belum ada quiz\nTambahkan minimal 1 quiz',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _quizList.length,
+                  itemBuilder: (context, index) {
+                    final quiz = _quizList[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text('Quiz ${index + 1}'),
+                        subtitle: Text(
+                          '${quiz['pertanyaan'].substring(0, quiz['pertanyaan'].length > 50 ? 50 : quiz['pertanyaan'].length)}...\nJawaban: ${quiz['jawaban']}',
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _removeQuiz(index),
+                        ),
+                      ),
+                    );
+                  },
+                ),
 
               const SizedBox(height: 30),
 

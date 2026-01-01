@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/pages/quiz_page.dart';
+import 'package:project/model/quiz_questions.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class DetailItemFirestore extends StatefulWidget {
@@ -21,7 +22,7 @@ class _DetailItemFirestoreState extends State<DetailItemFirestore> {
   Map<String, dynamic>? ceritaData;
   Map<String, dynamic>? detailItem;
   bool isLoading = true;
-  List<dynamic> quizList = [];
+  List<QuizQuestion> quizList = [];
 
   @override
   void initState() {
@@ -42,18 +43,15 @@ class _DetailItemFirestoreState extends State<DetailItemFirestore> {
         setState(() {
           ceritaData = data;
           detailItem = data?['detail_item'];
+          
+          // Convert quiz dari Firestore ke List<QuizQuestion>
+          if (data?['quiz'] != null) {
+            quizList = (data!['quiz'] as List).map((q) {
+              return QuizQuestion.fromFirestore(q as Map<String, dynamic>);
+            }).toList();
+          }
+          
           isLoading = false;
-        });
-      }
-
-      final quizDoc = await FirebaseFirestore.instance
-          .collection('quizzes')
-          .doc('data')
-          .get();
-      
-      if (quizDoc.exists) {
-        setState(() {
-          quizList = List<dynamic>.from(quizDoc.data()?['list_quiz'] ?? []);
         });
       }
     } catch (e) {
@@ -203,25 +201,25 @@ class _DetailItemFirestoreState extends State<DetailItemFirestore> {
                       ),
                     ),
                     onPressed: () {
-                      int quizIndex = quizList.indexWhere(
-                        (quiz) => quiz['name'] == detailItem!['judul'],
-                      );
-
-                      if (quizIndex != -1) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => QuizPage(
-                              questions: quizList[quizIndex]['questions'],
-                              namaQuiz: quizList[quizIndex]['name'],
-                            ),
+                      if (quizList.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Quiz tidak tersedia untuk cerita ini'),
+                            backgroundColor: Colors.red,
                           ),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Quiz tidak tersedia')),
-                        );
+                        return;
                       }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizPage(
+                            questions: quizList,
+                            namaQuiz: detailItem!['judul'] ?? 'Quiz',
+                          ),
+                        ),
+                      );
                     },
                     child: Text(
                       "Quiz",
