@@ -228,38 +228,7 @@ class _AdminPageState extends State<AdminPage> {
         title: const Text('📁 Instruksi Copy File'),
         content: SingleChildScrollView(
           child: Text('''
-LANGKAH 1: Copy file ke folder assets
-
-GAMBAR CERITA:
-File: $imageName
-Ke: assets/cerita/images/$imageName
-
-AUDIO NARASI CERITA:
-File: $audioName
-Ke: assets/cerita/audio/$audioName
-
-GAMBAR DETAIL ITEM:
-File: $itemImageName
-Ke: assets/cerita/detail/images/$itemImageName
-
-AUDIO DETAIL ITEM:
-File: $itemAudioName
-Ke: assets/cerita/detail/audio/$itemAudioName
-
-LANGKAH 2: Update pubspec.yaml
-
-Tambahkan:
-  - assets/cerita/images/$imageName
-  - assets/cerita/audio/$audioName
-  - assets/cerita/detail/images/$itemImageName
-  - assets/cerita/detail/audio/$itemAudioName
-
-LANGKAH 3: Run command
-flutter pub get
-
-LANGKAH 4: Restart app
-
-Data sudah tersimpan di Firestore!
+DATA BERHASIL DIUPLOAD!
 '''),
         ),
         actions: [
