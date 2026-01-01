@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import '../data/data_buku.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -370,7 +369,7 @@ DATA TELAH DIUPLOAD!
               ),
               const SizedBox(height: 8),
               const Text(
-                '1 Cerita = 1 Detail Item + 1-5 Quiz',
+                '',
                 style: TextStyle(fontSize: 12, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
