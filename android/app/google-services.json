@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "899400343510",
-    "project_id": "projectambw-9249b",
-    "storage_bucket": "projectambw-9249b.firebasestorage.app"
+    "project_number": "548588515842",
+    "project_id": "proyekambw-9249g",
+    "storage_bucket": "proyekambw-9249g.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:899400343510:android:0ea9538badf6f009234e77",
+        "mobilesdk_app_id": "1:548588515842:android:46675c6df18088c22aad1b",
         "android_client_info": {
           "package_name": "id.or.alkitab.caua.musa.firestorever"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBwpy_2Le9Z7Jzoi4F3J_aDmAgSZCcIrnU"
+          "current_key": "AIzaSyAGz4FpgJty65iIoH2T1_P0XW9z-uoKfCA"
         }
       ],
       "services": {

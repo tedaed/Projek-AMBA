@@ -41,49 +41,46 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyC1JSp1atPwqsP5r09vyL8uR8CVAwoaWB8',
-    appId: '1:31931433644:web:9831be1d3a05167b42d509',
-    messagingSenderId: '31931433644',
-    projectId: 'loginpagemusa',
-    authDomain: 'loginpagemusa.firebaseapp.com',
-    storageBucket: 'loginpagemusa.firebasestorage.app',
+    apiKey: 'AIzaSyBD3AhIaIPUokjASkO50uyZEfnsng9oles',
+    appId: '1:548588515842:web:fe61fd5406b704372aad1b',
+    messagingSenderId: '548588515842',
+    projectId: 'proyekambw-9249g',
+    authDomain: 'proyekambw-9249g.firebaseapp.com',
+    storageBucket: 'proyekambw-9249g.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBRgRgCExqPTAYHoD3LDV1aPCHEtQkHQQ4',
-    appId: '1:31931433644:android:94cd4c48393a57b442d509',
-    messagingSenderId: '31931433644',
-    projectId: 'loginpagemusa',
-    storageBucket: 'loginpagemusa.firebasestorage.app',
+    apiKey: 'AIzaSyAGz4FpgJty65iIoH2T1_P0XW9z-uoKfCA',
+    appId: '1:548588515842:android:46675c6df18088c22aad1b',
+    messagingSenderId: '548588515842',
+    projectId: 'proyekambw-9249g',
+    storageBucket: 'proyekambw-9249g.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD_biPUa5Pr6HwucXOX40b2_Hw9njXkaYc',
-    appId: '1:31931433644:ios:3f6ef61718eac9eb42d509',
-    messagingSenderId: '31931433644',
-    projectId: 'loginpagemusa',
-    storageBucket: 'loginpageymusa.firebasestorage.app',
-    iosClientId: '31931433644-rrl72ug2j24tgj33o29o8roceoqvcskl.apps.googleusercontent.com',
-    iosBundleId: 'com.example.loginPageMusa',
+    apiKey: 'AIzaSyA-RO57g1ayvUJGm-Mrl_ZMhETCs0mMVTM',
+    appId: '1:548588515842:ios:681b64dff22925582aad1b',
+    messagingSenderId: '548588515842',
+    projectId: 'proyekambw-9249g',
+    storageBucket: 'proyekambw-9249g.firebasestorage.app',
+    iosBundleId: 'id.or.alkitab.caua.musa',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD_biPUa5Pr6HwucXOX40b2_Hw9njXkaYc',
-    appId: '1:31931433644:ios:3f6ef61718eac9eb42d509',
-    messagingSenderId: '31931433644',
-    projectId: 'loginpagemusa',
-    storageBucket: 'loginpagemusa.firebasestorage.app',
-    iosClientId: '31931433644-rrl72ug2j24tgj33o29o8roceoqvcskl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyA-RO57g1ayvUJGm-Mrl_ZMhETCs0mMVTM',
+    appId: '1:548588515842:ios:10b3979d454324bf2aad1b',
+    messagingSenderId: '548588515842',
+    projectId: 'proyekambw-9249g',
+    storageBucket: 'proyekambw-9249g.firebasestorage.app',
     iosBundleId: 'com.example.loginPageMusa',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyC1JSp1atPwqsP5r09vyL8uR8CVAwoaWB8',
-    appId: '1:31931433644:web:ce34a256aeac48cb42d509',
-    messagingSenderId: '31931433644',
-    projectId: 'loginpagemusa',
-    authDomain: 'loginpagemusa.firebaseapp.com',
-    storageBucket: 'loginpagemusa.firebasestorage.app',
+    apiKey: 'AIzaSyBD3AhIaIPUokjASkO50uyZEfnsng9oles',
+    appId: '1:548588515842:web:03363c21d7b310d82aad1b',
+    messagingSenderId: '548588515842',
+    projectId: 'proyekambw-9249g',
+    authDomain: 'proyekambw-9249g.firebaseapp.com',
+    storageBucket: 'proyekambw-9249g.firebasestorage.app',
   );
-
 }
