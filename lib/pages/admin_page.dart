@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import '../data/data_buku.dart';
-import '../data/data_quiz.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -12,8 +11,6 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  bool _isUploadingBooks = false;
-  bool _isUploadingQuizzes = false;
   bool _isSubmitting = false;
 
   // Controllers untuk Cerita
@@ -227,7 +224,7 @@ class _AdminPageState extends State<AdminPage> {
       builder: (context) => AlertDialog(
         content: SingleChildScrollView(
           child: Text('''
-DATA BERHASIL DIUPLOAD!
+DATA TELAH DIUPLOAD!
 '''),
         ),
         actions: [
@@ -343,60 +340,6 @@ DATA BERHASIL DIUPLOAD!
     }
   }
 
-  Future<void> _uploadBooks() async {
-    setState(() => _isUploadingBooks = true);
-    try {
-      await FirebaseFirestore.instance.collection('books').doc('data').set({
-        'halaman': HALAMAN,
-        'detail_item': DETAIL_ITEM,
-        'ayat': AYAT,
-        'audio_cerita': AUDIO_CERITA,
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data buku berhasil diupload!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    } finally {
-      setState(() => _isUploadingBooks = false);
-    }
-  }
-
-  Future<void> _uploadQuizzes() async {
-    setState(() => _isUploadingQuizzes = true);
-    try {
-      await FirebaseFirestore.instance.collection('quizzes').doc('data').set({
-        'list_quiz': LIST_QUIZ.map((item) => {
-              'name': item[0],
-              'questions': item[1].map((q) => {
-                    'question': q.question,
-                    'options': q.options,
-                    'correctAnswer': q.correctAnswer,
-                  }).toList(),
-            }).toList(),
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data quiz berhasil diupload!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    } finally {
-      setState(() => _isUploadingQuizzes = false);
-    }
-  }
-
   @override
   void dispose() {
     _judulController.dispose();
@@ -421,42 +364,8 @@ DATA BERHASIL DIUPLOAD!
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Upload Data ke Firestore',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: _isUploadingBooks ? null : _uploadBooks,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.green,
-                ),
-                child: _isUploadingBooks
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Upload Data Buku', style: TextStyle(fontSize: 18)),
-              ),
-              const SizedBox(height: 12),
-
-              ElevatedButton(
-                onPressed: _isUploadingQuizzes ? null : _uploadQuizzes,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.orange,
-                ),
-                child: _isUploadingQuizzes
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Upload Data Quiz', style: TextStyle(fontSize: 18)),
-              ),
-
-              const SizedBox(height: 40),
-              const Divider(thickness: 2),
-              const SizedBox(height: 20),
-
-              const Text(
                 'Tambah Cerita Baru',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -465,7 +374,7 @@ DATA BERHASIL DIUPLOAD!
                 style: TextStyle(fontSize: 12, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // DATA CERITA
               const Text(
