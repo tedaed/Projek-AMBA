@@ -98,6 +98,10 @@ flutter:
     - assets/cerita/audio/narasi_cerita1.mp3
     - assets/cerita/detail/images/cerita-1-malaikat-musa.png
     - assets/cerita/detail/audio/item_malaikat.mp3
+    - assets/cerita/images/Fuwawahoeh.png
+    - assets/cerita/audio/BOOM.mp3
+    - assets/cerita/detail/images/mogojohn.png
+    - assets/cerita/detail/audio/bgm.mp3
 
     
   # An image asset can refer to one or more resolution-specific "variants", see
