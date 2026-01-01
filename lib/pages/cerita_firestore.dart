@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project/pages/Cerita/detail_item/detail_item.dart';
+import 'package:project/pages/Cerita/detail_item/detail_item_firestore.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-class CeritaPage extends StatefulWidget {
+class CeritaFirestore extends StatefulWidget {
   final String docId;
 
-  const CeritaPage({
+  const CeritaFirestore({
     super.key,
     required this.docId,
   });
 
   @override
-  State<CeritaPage> createState() => _CeritaPageState();
+  State<CeritaFirestore> createState() => _CeritaFirestoreState();
 }
 
-class _CeritaPageState extends State<CeritaPage> {
+class _CeritaFirestoreState extends State<CeritaFirestore> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool isPlaying = false;
   Map<String, dynamic>? ceritaData;
@@ -195,7 +195,7 @@ class _CeritaPageState extends State<CeritaPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DetailItemPage(
+                            builder: (context) => DetailItemFirestore(
                               docId: widget.docId,
                             ),
                           ),

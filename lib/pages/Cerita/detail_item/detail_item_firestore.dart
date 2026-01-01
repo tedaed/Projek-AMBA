@@ -3,19 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/pages/quiz_page.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-class DetailItemPage extends StatefulWidget {
+class DetailItemFirestore extends StatefulWidget {
   final String docId;
 
-  const DetailItemPage({
+  const DetailItemFirestore({
     super.key,
     required this.docId,
   });
 
   @override
-  State<DetailItemPage> createState() => _DetailItemPageState();
+  State<DetailItemFirestore> createState() => _DetailItemFirestoreState();
 }
 
-class _DetailItemPageState extends State<DetailItemPage> {
+class _DetailItemFirestoreState extends State<DetailItemFirestore> {
   late final AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   Map<String, dynamic>? ceritaData;
@@ -46,7 +46,6 @@ class _DetailItemPageState extends State<DetailItemPage> {
         });
       }
 
-      // Load quiz data
       final quizDoc = await FirebaseFirestore.instance
           .collection('quizzes')
           .doc('data')

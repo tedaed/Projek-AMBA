@@ -252,6 +252,19 @@ class _PengaturanState extends State<Pengaturan> {
                   ),
                 ),
                 const SizedBox(height: 30),
+                if (email == 'steve.ank015009@gmail.com') // Email admin
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
+                    label: const Text('Admin Panel',
+                        style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                    ),
+                    onPressed: () => Navigator.pushNamed(context, '/admin'),
+                  ),
+                const SizedBox(height: 10),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.delete, color: Colors.white),
                   label: const Text('Hapus Akun',

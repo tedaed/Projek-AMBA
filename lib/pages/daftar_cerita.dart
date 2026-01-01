@@ -1,92 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:project/data/data_buku.dart';
-import 'package:project/pages/Cerita/halaman_utama_cerita/cerita.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project/pages/cerita_firestore.dart';
 
-class DaftarCerita extends StatefulWidget {
+class DaftarCerita extends StatelessWidget {
   const DaftarCerita({super.key});
 
   @override
-  State<DaftarCerita> createState() => _DaftarCeritaState();
-}
-
-class _DaftarCeritaState extends State<DaftarCerita> {
-  @override
   Widget build(BuildContext context) {
-  var screenWidth = MediaQuery.of(context).size.width;
-  var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: const Color.fromARGB(255, 175, 255, 180),
       appBar: AppBar(
-        leading: BackButton(
-          style: ButtonStyle(
-            iconSize: WidgetStateProperty.all(35),
-          ),
-          onPressed: () {
-            Navigator.pushNamed(context, '/home');
-          },
-        ),
-        backgroundColor: Colors.transparent,
+        title: const Text('Daftar Cerita'),
+        backgroundColor: Colors.blue,
       ),
-      body: DecoratedBox( //background image
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(URL_BackgroundDaftarCerita), 
-            fit: BoxFit.cover
-          ),
-        ),
-        //Content
-        child: SingleChildScrollView(
-            child: Column(
-            children: [
-              SizedBox(height: screenHeight * 0.15),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('cerita')
+            .orderBy('created_at', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              Align(
-                alignment: Alignment.center,
-                child: Text('Daftar Cerita', style: TextStyle(fontSize: screenWidth * 0.1, letterSpacing: (screenWidth * 0.1) * 0.1)),
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'Belum ada cerita.\nTambahkan cerita di Admin Panel.',
+                textAlign: TextAlign.center,
               ),
+            );
+          }
 
-              SizedBox(height: screenHeight * 0.03),
-              Column(
-                //Daftar Cerita
-                children: [
-                  for (int i = 0; i < HALAMAN.length; i++) ...[
-                    //Halaman: [judul, imageURL], AYAT: [Ayat, isiAyat]
-                    CeritaWidget(screenWidth, screenHeight, HALAMAN[i][0], HALAMAN[i][1], AYAT[i][0], AYAT[i][1], i),
-                    SizedBox(height: screenHeight * 0.02),
-                  ]
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+          final ceritaDocs = snapshot.data!.docs;
 
-  ElevatedButton CeritaWidget(var screenWidth, var screenHeight, String judul, String imageURL, String judulAyat, String isiAyat, int index) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,  
-        fixedSize: Size(screenWidth * 0.85, screenHeight * 0.12), 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
-      onPressed: () => {
-        Navigator.push (
-          context, 
-          MaterialPageRoute(builder: (context) => Cerita(judul_halaman: judul, ayat: judulAyat, isi_ayat: isiAyat, url_gambar: imageURL, index: index))),
-      },
-      child: Row(
-        children: [
-          Image.asset(imageURL, width: screenWidth * 0.18, height: screenWidth * 0.18),
-          SizedBox(width: screenWidth * 0.02), 
-          Expanded( 
-            child: Text(
-              judul,
-              style: TextStyle(fontSize: screenWidth * 0.05, color: Colors.black),
-              softWrap: true, 
-              overflow: TextOverflow.visible, 
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView.builder(
+              itemCount: ceritaDocs.length,
+              itemBuilder: (context, index) {
+                final cerita = ceritaDocs[index].data() as Map<String, dynamic>;
+                final docId = ceritaDocs[index].id;
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CeritaFirestore(docId: docId),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          child: Image.asset(
+                            cerita['gambar'] ?? 'assets/images/placeholder.jpg',
+                            width: double.infinity,
+                            height: screenHeight * 0.2,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: screenHeight * 0.2,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.broken_image, size: 50),
+                              );
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                cerita['judul'] ?? 'Tanpa Judul',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.05,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                cerita['ayat'] ?? '',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.04,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CeritaFirestore(docId: docId),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                  child: const Text(
+                                    'Baca Cerita',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

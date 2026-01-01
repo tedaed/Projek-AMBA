@@ -170,7 +170,5 @@ const List<List<String>> AYAT = [
 const List<String> AUDIO_CERITA = [
   "assets/audio/cerita1/narasi_cerita1.mp3",
   "assets/audio/cerita2/narasi_cerita2.mp3",
-  
-  
 ];
 

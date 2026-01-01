@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/firebase/login.dart';
+import 'package:project/pages/admin_page.dart';
 import 'package:project/pages/daftar_cerita.dart';
 import 'package:project/pages/home.dart';
 import 'package:project/pages/pengaturan.dart';
@@ -37,6 +38,7 @@ class _AppState extends State<App>{
         '/scan': (context) => CameraView(),
         '/daftar_cerita': (context) => DaftarCerita(),
         '/pengaturan': (context) => Pengaturan(),
+        '/admin': (context) => const AdminPage(),
       },
     );
   }
