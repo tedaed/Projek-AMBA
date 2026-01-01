@@ -225,7 +225,6 @@ class _AdminPageState extends State<AdminPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('📁 Instruksi Copy File'),
         content: SingleChildScrollView(
           child: Text('''
 DATA BERHASIL DIUPLOAD!
