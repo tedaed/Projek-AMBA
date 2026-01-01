@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +45,7 @@ class ScanController extends GetxController {
     if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
       
-      cameraController = await CameraController(
+      cameraController = CameraController(
         cameras[0], 
         ResolutionPreset.medium
         );

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/data_buku.dart';
-import 'login.dart';
 
 class VerifikasiEmailPage extends StatefulWidget {
   const VerifikasiEmailPage({super.key});
@@ -47,10 +46,7 @@ class _VerifikasiEmailPageState extends State<VerifikasiEmailPage> {
           const SnackBar(content: Text('Verifikasi Berhasil!')),
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginPage()),
-        );
+        Navigator.pushNamed(context, '/home');
       }
     }
   }

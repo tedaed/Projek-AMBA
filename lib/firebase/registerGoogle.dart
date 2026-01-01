@@ -4,17 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/data_buku.dart';
-import 'isi.dart';
 
 class RegisterGooglePage extends StatefulWidget {
   final String email;
   final String? initialUsername;
 
   const RegisterGooglePage({
-    Key? key,
+    super.key,
     required this.email,
     this.initialUsername,
-  }) : super(key: key);
+  });
 
   @override
   State<RegisterGooglePage> createState() => _RegisterGooglePageState();

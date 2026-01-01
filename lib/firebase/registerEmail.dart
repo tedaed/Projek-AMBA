@@ -90,7 +90,7 @@ class _RegisterEmailPageState extends State<RegisterEmailPage> {
       appBar:  AppBar(
         leading: BackButton(
           style: ButtonStyle(
-            iconSize: MaterialStateProperty.all(35),
+            iconSize: WidgetStateProperty.all(35),
           ),
           onPressed: () {
             Navigator.pushNamed(context, '/login');

@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:project/data/data_buku.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'isi.dart';
 import 'registerEmail.dart';
 import 'registerGoogle.dart';
 import 'lupaPassword.dart';
@@ -89,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushNamed(context, '/home');
         }
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Terjadi kesalahan, silahkan diulang kembali')),
       );
@@ -98,39 +97,55 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Future<void> signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut();
+    try {
+      final googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
 
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return;
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return;
 
-    final email = googleUser.email;
+      final email = googleUser.email;
 
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    final user = userCredential.user;
-    if (user == null) return;
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = userCredential.user;
+      if (user == null) return;
 
-    final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
+      final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
 
-    if (userDoc.exists) {
-      if (mounted) {
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (_) => const IsiPage()),
-        // );
-        Navigator.pushNamed(context, '/home');
+      if (userDoc.exists) {
+        if (mounted) {
+          Navigator.pushNamed(context, '/home');
+        }
+      } else {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => RegisterGooglePage(email: email)),
+          );
+        }
       }
-    } else {
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'account-exists-with-different-credential') {
+        message = 'Akun dengan email ini sudah ada. Silakan login dengan email dan password.';
+      } else {
+        message = 'Terjadi kesalahan saat login dengan Google: ${e.message}';
+      }
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => RegisterGooglePage(email: email)),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan: $e')),
         );
       }
     }

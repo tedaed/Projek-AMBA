@@ -1,5 +1,3 @@
-import 'package:project/data/data_quiz.dart';
-import 'package:project/model/quiz_questions.dart';
 
 const String judul = "MUSA";
 const String subJudul = "DAN UMAT TUHAN";
@@ -50,12 +48,10 @@ const List<List<String>> HALAMAN = [
   ["Tuhan Berbelas Kasih", URL_placeholder]
 ];
 
-/**
- * Format:
- * [Bab]
- * [List Item]
- * [Judul Item, Deskripsi Item, Gambar Item, Audio Item]
- */
+/// Format:
+/// [Bab]
+/// [List Item]
+/// [Judul Item, Deskripsi Item, Gambar Item, Audio Item]
 const List<List<List<String>>> DETAIL_ITEM = [
   [
     [

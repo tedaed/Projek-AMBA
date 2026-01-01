@@ -31,7 +31,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         const SnackBar(content: Text('Email reset telah dikirim')),
       );
       Navigator.pop(context);
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Terjadi kesalahan, silahkan diulang kembali')),
       );
@@ -55,7 +55,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar:  AppBar(
         leading: BackButton(
           style: ButtonStyle(
-            iconSize: MaterialStateProperty.all(35),
+            iconSize: WidgetStateProperty.all(35),
           ),
           onPressed: () {
             Navigator.pushNamed(context, '/login');
