@@ -21,7 +21,6 @@ class LeaderboardPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('user')
             .orderBy('score', descending: true)
-            .orderBy('scoreTimestamp', descending: false)
             .limit(10)
             .snapshots(),
         builder: (context, snapshot) {
