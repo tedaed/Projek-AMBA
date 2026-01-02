@@ -4,11 +4,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:project/data/data_buku.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'registerEmail.dart';
 import 'registerGoogle.dart';
 import 'lupaPassword.dart';
 import 'package:flutter/material.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,6 +20,20 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  late final GoogleSignIn _googleSignIn;
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ Initialize GoogleSignIn dengan clientId untuk Web
+    _googleSignIn = GoogleSignIn(
+      clientId: kIsWeb 
+        ? '548588515842-poprvqrohh7qhf6gbjncp2cvi9m8brsl.apps.googleusercontent.com'
+        : null,
+      scopes: ['email', 'profile'],
+    );
+  }
+
   Future<void> signInWithEmailPassword() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -37,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
         password: password,
       );
 
-
       final user = credential.user;
       if (user != null && !user.emailVerified) {
         await FirebaseAuth.instance.signOut();
@@ -45,26 +58,24 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           showDialog(
             context: context,
-            builder: (_) =>
-                AlertDialog(
-                  backgroundColor: Colors.white,
-                  title: const Text('Verifikasi Email'),
-                  content: const Text(
-                    'Kami telah mengirimkan email verifikasi untuk akun anda.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Ok'),
-                    ),
-                  ],
+            builder: (_) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Verifikasi Email'),
+              content: const Text(
+                'Kami telah mengirimkan email verifikasi untuk akun anda.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Ok'),
                 ),
+              ],
+            ),
           );
         }
         return;
       }
 
-      //update akun di firebase apabila sudah verifikasi
       if (user != null && user.emailVerified) {
         final prefs = await SharedPreferences.getInstance();
         final username = prefs.getString('pending_username_${user.email}');
@@ -72,41 +83,43 @@ class _LoginPageState extends State<LoginPage> {
 
         if (username != null && gender != null) {
           await user.updateDisplayName(username);
-          await FirebaseFirestore.instance.collection('user').doc(user.uid).set(
-              {
-                'gender': gender,
-              });
+          await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+            'gender': gender,
+          });
           await prefs.remove('username_temp_${user.email}');
           await prefs.remove('gender_temp_${user.email}');
         }
 
         if (mounted) {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (_) => const IsiPage()),
-          // );
           Navigator.pushNamed(context, '/home');
         }
       }
     } on FirebaseAuthException {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan, silahkan diulang kembali')),
+        const SnackBar(content: Text('Terjadi kesalahan, silahkan diulang kembali')),
       );
     }
   }
 
-
   Future<void> signInWithGoogle() async {
     try {
-      final googleSignIn = GoogleSignIn();
-      await googleSignIn.signOut();
+      // ✅ Sign out dulu untuk clear cache
+      await _googleSignIn.signOut();
 
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return;
+      // ✅ Trigger Google Sign In
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print('❌ User cancelled sign in');
+        return;
+      }
 
       final email = googleUser.email;
 
       final googleAuth = await googleUser.authentication;
+      
+      print('✅ ID TOKEN: ${googleAuth.idToken}');
+      print('✅ ACCESS TOKEN: ${googleAuth.accessToken}');
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -118,19 +131,23 @@ class _LoginPageState extends State<LoginPage> {
 
       final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
 
+      if (!mounted) return;
+
       if (userDoc.exists) {
-        if (mounted) {
-          Navigator.pushNamed(context, '/home');
-        }
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => RegisterGooglePage(email: email)),
-          );
-        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RegisterGooglePage(
+              email: email,
+              initialUsername: user.displayName,
+            ),
+          ),
+        );
       }
     } on FirebaseAuthException catch (e) {
+      print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
       String message;
       if (e.code == 'account-exists-with-different-credential') {
         message = 'Akun dengan email ini sudah ada. Silakan login dengan email dan password.';
@@ -143,6 +160,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
+      print('❌ Error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Terjadi kesalahan: $e')),
@@ -151,7 +169,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   Future<void> signUp() async {
     Navigator.pushReplacement(
       context,
@@ -159,6 +176,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,19 +248,19 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 6),
-              Row(
+              const Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Divider(
                       thickness: 1,
                       color: Colors.black,
                     ),
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text("atau"),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Divider(
                       thickness: 1,
                       color: Colors.black,
@@ -256,15 +279,15 @@ class _LoginPageState extends State<LoginPage> {
                 label: const Text("Lanjutkan dengan Google"),
                 onPressed: signInWithGoogle,
               ),
-              const SizedBox(height:12),
-              ElevatedButton.icon(
+              const SizedBox(height: 12),
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                   minimumSize: const Size.fromHeight(50),
                 ),
-                label: const Text("Belum punya akun? Registrasi!"),
                 onPressed: signUp,
+                child: const Text("Belum punya akun? Registrasi!"),
               ),
               const SizedBox(height: 24),
             ],
