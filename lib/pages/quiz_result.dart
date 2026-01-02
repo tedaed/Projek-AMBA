@@ -73,19 +73,29 @@ class _QuizResultPageState extends State<QuizResultPage> {
       final userRef = firestore.collection('user').doc(user.uid);
       final userDoc = await userRef.get();
 
+      // Ambil username dari displayName atau dari doc yang sudah ada
+      String username = user.displayName ?? 'User';
+      
       if (userDoc.exists) {
+        // Kalau doc sudah ada, ambil username yang tersimpan (jika ada)
+        final existingUsername = userDoc.data()?['username'];
+        if (existingUsername != null && existingUsername.isNotEmpty) {
+          username = existingUsername;
+        }
+        
         final currentScore = userDoc.data()?['score'] ?? 0;
         final newScore = currentScore + quizScore;
 
         await userRef.update({
           'score': newScore,
           'scoreTimestamp': FieldValue.serverTimestamp(),
+          'username': username, // ✅ Update username juga
         });
       } else {
         await userRef.set({
           'score': quizScore,
           'scoreTimestamp': FieldValue.serverTimestamp(),
-          'username': user.displayName ?? 'User',
+          'username': username,
           'email': user.email ?? '',
           'gender': 'Laki-laki',
         });
