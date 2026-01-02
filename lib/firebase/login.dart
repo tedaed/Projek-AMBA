@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
     // ✅ Initialize GoogleSignIn dengan clientId untuk Web
     _googleSignIn = GoogleSignIn(
       clientId: kIsWeb 
-        ? '548588515842-poprvqrohh7qhf6gbjncp2cvi9m8brsl.apps.googleusercontent.com'
+        ? '548588515842-7prmqlk98atl3oesior8q4d0gl7gqd4t.apps.googleusercontent.com'
         : null,
       scopes: ['email', 'profile'],
     );
