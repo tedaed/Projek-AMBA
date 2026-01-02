@@ -102,6 +102,27 @@ flutter:
     - assets/cerita/audio/BOOM.mp3
     - assets/cerita/detail/images/mogojohn.png
     - assets/cerita/detail/audio/bgm.mp3
+    - assets/cerita/images/Gambar1.png
+    - assets/cerita/images/Gambar2.png
+    - assets/cerita/images/Gambar3.png
+    - assets/cerita/images/Gambar4.png
+    - assets/cerita/images/Gambar5.png
+    - assets/cerita/detail/images/GambarDetail1.png
+    - assets/cerita/detail/images/GambarDetail2.png
+    - assets/cerita/detail/images/GambarDetail3.png
+    - assets/cerita/detail/images/GambarDetail4.png
+    - assets/cerita/detail/images/GambarDetail5.png
+    - assets/cerita/audio/Audio1.mp3
+    - assets/cerita/audio/Audio2.mp3
+    - assets/cerita/audio/Audio3.mp3
+    - assets/cerita/audio/Audio4.mp3
+    - assets/cerita/audio/Audio5.mp3
+    - assets/cerita/detail/audio/AudioDetail1.mp3
+    - assets/cerita/detail/audio/AudioDetail2.mp3
+    - assets/cerita/detail/audio/AudioDetail3.mp3
+    - assets/cerita/detail/audio/AudioDetail4.mp3
+    - assets/cerita/detail/audio/AudioDetail5.mp3
+
 
     
   # An image asset can refer to one or more resolution-specific "variants", see
