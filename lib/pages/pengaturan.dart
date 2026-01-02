@@ -252,7 +252,7 @@ class _PengaturanState extends State<Pengaturan> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                if (email == 'steve.ank015009@gmail.com' || email == 'elmachopicolo9@gmail.com' || email == 'eonvalleron@gmail.com' || email == 'theodorusdar@gmail.com') 
+                if (email == 'steve.ank015009@gmail.com' || email == 'elmachopicolo9@gmail.com' || email == 'c14210227@john.petra.ac.id' || email == 'theodorusdar@gmail.com') 
                   ElevatedButton.icon(
                     icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
                     label: const Text('Admin Panel',
